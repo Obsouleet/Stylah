@@ -3,7 +3,7 @@ Pebble.addEventListener('ready', function() {
 });
 
 Pebble.addEventListener('showConfiguration', function() {
-  var url = 'https://cdn.rawgit.com/Obsouleet/PWatch/master/config/index.html';
+  var url = 'https://rawgit.com/Obsouleet/PWatch/master/config/index1.html';
   console.log('Showing configuration page: ' + url);
 
   Pebble.openURL(url);
@@ -12,37 +12,45 @@ Pebble.addEventListener('showConfiguration', function() {
 Pebble.addEventListener('webviewclosed', function(e) {
   var configData = JSON.parse(decodeURIComponent(e.response));
   console.log('Configuration page returned: ' + JSON.stringify(configData));
-
+	
+	
 //  var backgroundColor = configData['background_color'];
 
+//	var app_message_json = {};
+/*	if (configData.inverted === null) configData.inverted = 0;
+	if (configData.twelvehr === null) configData.twelvehr = 0;
+	if (configData.showdate === null) configData.showdate = 0;
+*/	
+//	 app_message_json.KEY_INVERTED = parseInt(configData.inverted);
+//	 app_message_json.KEY_TWELVEHR = parseInt(configData.twelvehr);
+//	 app_message_json.KEY_SHOWDATE = parseInt(configData.showdate);
+	
+	
+//	console.log('Inverted: ' + app_message_json.inverted);
+	
+	
   var dict = {
-	"KEY_COLOR_NR":parseInt(configData['colour']),
-	"KEY_INVERTED":parseInt(configData['inverted']),
-	"KEY_TWELVEHR":parseInt(configData['twelvehr']),
-	"KEY_SHOWDATE":parseInt(configData['showdate']),
-		
-	"KEY_COL00":parseInt(configData['col00']),
-	"KEY_COL01":parseInt(configData['col01']),
-	"KEY_COL02":parseInt(configData['col02']),
-		
-	"KEY_COL10":parseInt(configData['col10']),
-	"KEY_COL11":parseInt(configData['col11']),
-	"KEY_COL12":parseInt(configData['col12']),
-		
-	"KEY_COL20":parseInt(configData['col20']),
-	"KEY_COL21":parseInt(configData['col21']),
-	"KEY_COL22":parseInt(configData['col22']),
-
-	"KEY_COL30":parseInt(configData['col30']),
-	"KEY_COL31":parseInt(configData['col31']),
-	"KEY_COL32":parseInt(configData['col32'])
-
+		0:parseInt(configData['inverted']),
+		1:parseInt(configData['twelvehr']),
+		2:parseInt(configData['showdate'])
 	};
-
-  // Send to watchapp
+	console.log('Inverted: ' + dict);
+	/*
+	// Send to watchapp
   Pebble.sendAppMessage(dict, function() {
     console.log('Send successful: ' + JSON.stringify(dict));
   }, function() {
     console.log('Send failed!');
-  });
+		    console.log(" failed: "+JSON.stringify(dict));
+  });*/
+	
+	
+	      Pebble.sendAppMessage(dict,
+            function(e) {
+              console.log ("\n++++ I am inside of 'Pebble.addEventListener(webviewclosed) callback' Data sent to phone successfully!");
+            },
+            function(e) {
+              console.log ("\n++++ I am inside of 'Pebble.addEventListener(webviewclosed) callback' Data sent to phone failed! = " +  JSON.stringify(e));
+            }
+         );
 });

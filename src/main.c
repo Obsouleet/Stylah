@@ -1,37 +1,18 @@
 #include "pebble.h"
 
-#define KEY_COLOR_NR 0
-#define KEY_INVERTED 1
-#define KEY_TWELVEHR 2	
-#define KEY_SHOWDATE 3
 
-#define KEY_COL00 4
-#define KEY_COL01 5
-#define KEY_COL02 6
+#define KEY_INVERTED 0
+#define KEY_TWELVEHR 1	
+#define KEY_SHOWDATE 2
 
-#define KEY_COL10 7
-#define KEY_COL11 8
-#define KEY_COL12 9
-
-#define KEY_COL20 10
-#define KEY_COL21 11
-#define KEY_COL22 12
-
-#define KEY_COL30 13
-#define KEY_COL31 14
-#define KEY_COL32 15
-
-// #define ALTFONT 1
- #define NEUFONT 1
+ #define ALTFONT 1
+// #define NEUFONT 1
 
 static int incer =0 ;
 static bool twelvehr = false;
 static bool showdate =false;
-static bool altfont = true;
-static GColor col0;
-static GColor col1;
-static GColor col2;
-static GColor col3;
+static bool inverted =false;
+
 
 static char *s_buffer;
 static Window *s_main_window;
@@ -89,27 +70,9 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
 
   Tuple *twelve_t = dict_find(iter, KEY_TWELVEHR);
   Tuple *show_t = dict_find(iter, KEY_SHOWDATE);
+	Tuple *inverted_t = dict_find(iter, KEY_INVERTED);
 	
-  Tuple *col00_t = dict_find(iter, KEY_COL00);
-  Tuple *col01_t = dict_find(iter, KEY_COL01);
-  Tuple *col02_t = dict_find(iter, KEY_COL02);
 
-  Tuple *col10_t = dict_find(iter, KEY_COL10);
-  Tuple *col11_t = dict_find(iter, KEY_COL11);
-  Tuple *col12_t = dict_find(iter, KEY_COL12);
-
-	Tuple *col20_t = dict_find(iter, KEY_COL20);
-  Tuple *col21_t = dict_find(iter, KEY_COL21);
-  Tuple *col22_t = dict_find(iter, KEY_COL22);
-
-	Tuple *col30_t = dict_find(iter, KEY_COL30);
-  Tuple *col31_t = dict_find(iter, KEY_COL31);
-  Tuple *col32_t = dict_find(iter, KEY_COL32);
-	
-	int red;
-	int green;
-	int blue;
-	
 	if (twelve_t) {
 		twelvehr = twelve_t->value->int8;
 	}	
@@ -118,61 +81,14 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
 		showdate = show_t->value->int8;		
 	}
 	
-	if (col00_t != 0) {
-		red = col00_t->value->int32;
-		green= col01_t->value->int32;
-		blue=col02_t->value->int32;
+	if (inverted_t) {
+		inverted = inverted_t->value->int8;
+	}		
 	
-		col0=GColorFromRGB(red, green, blue);
-//		APP_LOG(APP_LOG_LEVEL_DEBUG, "Color0: %d %d %d", red, green, blue);
-	
-	  persist_write_int(KEY_COL00, red);
-    persist_write_int(KEY_COL01, green);
-    persist_write_int(KEY_COL02, blue);
-	}
-	
-	if (col10_t != 0) {
-		red = col10_t->value->int32;
-		green= col11_t->value->int32;
-		blue=col12_t->value->int32;
-	
-		col1=GColorFromRGB(red, green, blue);
-//		APP_LOG(APP_LOG_LEVEL_DEBUG, "Color0: %d %d %d", red, green, blue);
+	persist_write_bool(KEY_TWELVEHR, twelvehr);
+	persist_write_bool(KEY_SHOWDATE, showdate);
+	persist_write_bool(KEY_INVERTED, inverted);
 
-	  persist_write_int(KEY_COL10, red);
-    persist_write_int(KEY_COL11, green);
-    persist_write_int(KEY_COL12, blue);		
-	}
-	
-	if (col20_t != 0) {
-		red = col20_t->value->int32;
-		green= col21_t->value->int32;
-		blue=col22_t->value->int32;
-	
-		col2=GColorFromRGB(red, green, blue);
-//		APP_LOG(APP_LOG_LEVEL_DEBUG, "Color0: %d %d %d", red, green, blue);
-
-	  persist_write_int(KEY_COL20, red);
-    persist_write_int(KEY_COL21, green);
-    persist_write_int(KEY_COL22, blue);
-	}
-	
-	if (col30_t != 0) {
-		red = col30_t->value->int32;
-		green= col31_t->value->int32;
-		blue=col32_t->value->int32;
-	
-		col3=GColorFromRGB(red, green, blue);
-//		APP_LOG(APP_LOG_LEVEL_DEBUG, "Color0: %d %d %d", red, green, blue);
-
-	  persist_write_int(KEY_COL30, red);
-    persist_write_int(KEY_COL31, green);
-    persist_write_int(KEY_COL32, blue);
-}
-
-		persist_write_bool(KEY_TWELVEHR, twelvehr);
-		persist_write_bool(KEY_SHOWDATE, showdate);
-	
   redaw_entire_screen();
 }
 
@@ -307,11 +223,19 @@ void handle_bluetooth( bool connected ) {
 	
 	if ( connected ) {
 		blit_digit(bar_layer, 10);       
-		Textcolour=col0;
+		if (inverted) {	
+			Textcolour=GColorWhite;
+		} else {	
+			Textcolour=GColorBlack;
+		}
 
 	} else {
 		blit_digit(bar_layer, 11);       
-		Textcolour=col3;
+		if (inverted) {	
+			Textcolour=GColorBlack;
+		} else {	
+			Textcolour=GColorWhite;
+		}	
 	}
 
 	battery_handler(battery_state_service_peek());
@@ -470,8 +394,17 @@ static void redaw_entire_screen(){
   GColor *Paletten[]={current_palette0_alt,current_palette1_alt, current_palette2_alt,current_palette3_alt,current_palette4_alt,current_palette5_alt, current_palette6_alt,current_palette7_alt,current_palette8_alt,current_palette9_alt,current_palettebar_alt,current_palettebarnull};
 	#endif
 	
+	GColor Farben[]={GColorBlack, GColorWhite};
 	
-	GColor Farben[]={col0, col1, col2, col3};
+	if (!inverted) {	
+		GColor Farben[]={GColorBlack, GColorWhite};
+		window_set_background_color(s_main_window, GColorBlack);
+		Textcolour=GColorWhite;
+	} else {	
+		GColor Farben[]={GColorWhite, GColorBlack};
+		window_set_background_color(s_main_window, GColorWhite);
+		Textcolour=GColorBlack;
+	}
 
 	for(int pals=0; pals<12;pals++){
 		incer=0;
@@ -491,11 +424,8 @@ static void redaw_entire_screen(){
 	blit_digit(links_oben_layer, hour / 10 );                   
 	blit_digit(rechts_oben_layer, hour % 10 );
 	blit_digit(links_unten_layer, minute / 10);                             
-	blit_digit(rechts_unten_layer, minute % 10);  
-	window_set_background_color(s_main_window, Paletten[0][0]);
-	Textcolour=Paletten[0][0];
-
-																																							//Datum anzeigen	
+	blit_digit(rechts_unten_layer, minute % 10); 
+																																								//Datum anzeigen	
 	handle_bluetooth(bluetooth_connection_service_peek());										// calls battery_handler(battery_state_service_peek());												
 									
 }
@@ -542,29 +472,10 @@ static void main_window_unload(Window *window) {
 
 static void init() {
 	
-	  int red = persist_exists(KEY_COL00) ? persist_read_int(KEY_COL00): 0;
-    int green = persist_exists(KEY_COL01) ? persist_read_int(KEY_COL01) : 0;
-    int blue = persist_exists(KEY_COL02) ? persist_read_int(KEY_COL02) : 0;
-    col0 = GColorFromRGB(red, green, blue);
-	
-	  red = persist_exists(KEY_COL10) ? persist_read_int(KEY_COL10) : 85;
-    green = persist_exists(KEY_COL11) ? persist_read_int(KEY_COL11) : 85;
-    blue = persist_exists(KEY_COL12) ? persist_read_int(KEY_COL12) : 85;
-    col1 = GColorFromRGB(red, green, blue);
-		
-	  red = persist_exists(KEY_COL20) ? persist_read_int(KEY_COL20) : 170;
-    green = persist_exists(KEY_COL21) ? persist_read_int(KEY_COL21) : 170;
-    blue = persist_exists(KEY_COL22) ? persist_read_int(KEY_COL22) : 170;
-    col2 = GColorFromRGB(red, green, blue);
-	
-	  red = persist_exists(KEY_COL30) ? persist_read_int(KEY_COL30) : 255;
-    green = persist_exists(KEY_COL31) ? persist_read_int(KEY_COL31) : 255;
-    blue = persist_exists(KEY_COL32) ? persist_read_int(KEY_COL32) : 255;
-    col3 = GColorFromRGB(red, green, blue);
-	
 		twelvehr=persist_exists(KEY_TWELVEHR) ? persist_read_bool(KEY_TWELVEHR) : false ;
-
 		showdate=persist_exists(KEY_SHOWDATE) ? persist_read_bool(KEY_SHOWDATE) : false ;
+		inverted=persist_exists(KEY_INVERTED) ? persist_read_bool(KEY_INVERTED) : false ;
+
 		prev_bt_status=bluetooth_connection_service_peek();
 		s_main_window = window_create();
 
@@ -579,8 +490,8 @@ static void init() {
 		});
 		window_stack_push(s_main_window, true);
 		app_message_register_inbox_received(inbox_received_handler);
-  	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
-	
+  //	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+	 app_message_open(500, 500); 
 }
  
 static void deinit() {
