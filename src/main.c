@@ -395,21 +395,20 @@ static void redaw_entire_screen(){
 	#endif
 	
 	GColor Farben[]={GColorBlack, GColorWhite};
-	
+
 	if (!inverted) {	
-		GColor Farben[]={GColorBlack, GColorWhite};
+
 		window_set_background_color(s_main_window, GColorBlack);
 		Textcolour=GColorWhite;
 	} else {	
-		GColor Farben[]={GColorWhite, GColorBlack};
 		window_set_background_color(s_main_window, GColorWhite);
 		Textcolour=GColorBlack;
 	}
 
 	for(int pals=0; pals<12;pals++){
 		incer=0;
-		for(int i=0; i<4;i++){
-			Paletten[pals][incer]=Farben[i];
+		for(int i=0; i<2;i++){
+			Paletten[pals][incer]=Farben[abs(i-inverted)];														// smart
 			incer++;
 		}	
 	}

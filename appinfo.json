@@ -136,6 +136,9 @@
             {
                 "file": "images/0.png",
                 "name": "image_0_alt",
+                "targetPlatforms": [
+                    "aplite"
+                ],
                 "type": "png"
             }
         ]

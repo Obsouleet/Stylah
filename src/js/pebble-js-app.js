@@ -4,14 +4,14 @@ Pebble.addEventListener('ready', function() {
 
 Pebble.addEventListener('showConfiguration', function() {
   var url = 'https://rawgit.com/Obsouleet/PWatch/master/config/index1.html';
-  console.log('Showing configuration page: ' + url);
+//  console.log('Showing configuration page: ' + url);
 
   Pebble.openURL(url);
 });
 
 Pebble.addEventListener('webviewclosed', function(e) {
   var configData = JSON.parse(decodeURIComponent(e.response));
-  console.log('Configuration page returned: ' + JSON.stringify(configData));
+//  console.log('Configuration page returned: ' + JSON.stringify(configData));
 	
 	
 //  var backgroundColor = configData['background_color'];
@@ -34,7 +34,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
 		1:parseInt(configData['twelvehr']),
 		2:parseInt(configData['showdate'])
 	};
-	console.log('Inverted: ' + dict);
+//	console.log('Inverted: ' + dict);
 	/*
 	// Send to watchapp
   Pebble.sendAppMessage(dict, function() {
@@ -47,10 +47,10 @@ Pebble.addEventListener('webviewclosed', function(e) {
 	
 	      Pebble.sendAppMessage(dict,
             function(e) {
-              console.log ("\n++++ I am inside of 'Pebble.addEventListener(webviewclosed) callback' Data sent to phone successfully!");
+ //             console.log ("\n++++ I am inside of 'Pebble.addEventListener(webviewclosed) callback' Data sent to phone successfully!");
             },
             function(e) {
-              console.log ("\n++++ I am inside of 'Pebble.addEventListener(webviewclosed) callback' Data sent to phone failed! = " +  JSON.stringify(e));
+//              console.log ("\n++++ I am inside of 'Pebble.addEventListener(webviewclosed) callback' Data sent to phone failed! = " +  JSON.stringify(e));
             }
          );
 });
